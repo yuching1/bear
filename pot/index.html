@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>塵歌壺原攝</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body {
+    font-family: 'Noto Sans TC', sans-serif;
+    margin: 0;
+    color: #4b2e2e;
+    background: 
+        linear-gradient(rgba(255, 248, 220, 0.75), rgba(255, 248, 220, 0.9)),
+        url('images/background.jpg') center/cover no-repeat fixed;
+}
+
+/* Banner */
+.banner {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #d2b48c; /* 淺棕色 */
+    color: #0b0a09;
+    text-align: center;
+    padding: 1rem 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+/* 主容器 */
+.container {
+    display: flex;
+    margin-top: 80px;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+/* 左側玩家列表 */
+.player-list {
+    width: 15%;
+    background-color: #fff2cc; /* 淺黃色 */
+    border-radius: 10px;
+    padding: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.player-list ul { list-style: none; padding: 0; margin: 0; }
+.player-list a {
+    display: block;
+    padding: 0.4rem;
+    margin-bottom: 0.3rem;
+    color: #4b2e2e;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.3s, color 0.3s;
+    font-weight: 700;
+}
+.player-list a:hover { background-color: #e6d5b0; color: #4b2e2e; }
+
+/* 中間展示區 */
+.main-display { width: 60%; display: flex; flex-direction: column; gap: 1rem; }
+
+/* 玩家照片區 */
+.player-photos {
+    display: flex;
+    flex-wrap: wrap; /* 大螢幕允許換行，手機自適應 */
+    gap: 1.2rem 1%;
+}
+
+
+
+/* 每張圖片容器 */
+.player-photos figure {
+    flex: 0 0 48%; /* 大螢幕兩張並排 */
+    margin: 0;
+    text-align: center;
+}
+
+.player-photos img {
+    width: 100%;
+    height: 160px;              /* 縮小整體尺寸 */
+    object-fit: cover;        /* 顯示完整圖片，不裁切 */
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.player-photos img:hover {
+    transform: scale(1.05);
+}
+
+.player-photos figcaption {
+    font-size: 0.75rem;
+    color: #4b2e2e;
+    margin-top: 0.2rem;
+}
+
+.player-photos h3 {
+    width: 100%;
+    font-size: 1.2rem;
+    margin: 0.5rem 0 0.8rem 0;
+    text-align: center;
+    color: #4b2e2e;
+}
+
+/* 右側翻牌 */
+.flip-cards {
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    background-color: #d2b48c;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.card {
+    perspective: 600px;
+    height: 50px;
+}
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+}
+.card:hover .card-inner { transform: rotateY(180deg); }
+.card-front, .card-back {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    backface-visibility: hidden;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 0.2rem;
+    font-size: 0.8rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.card-front { background-color: #fff2cc; font-weight: 600; color: #4b2e2e; }
+.card-back { background-color: #fff2cc; transform: rotateY(180deg); font-weight: 400; color: #4b2e2e; }
+
+/* 響應式 */
+@media (max-width: 900px) {
+    .container { flex-direction: column; }
+    .player-list, .main-display, .flip-cards { width: 100%; }
+    .flip-cards { gap: 0.5rem; }
+    .card { height: 45px; }
+    .player-photos figure { flex: 0 0 100%; } /* 手機單列 */
+}
+
+/* 圖片放大 lightbox */
+#lightbox {
+    position: fixed;
+    display: none;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+#lightbox img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 8px;
+}
+#lightbox.show { display: flex; cursor: zoom-out; }
+</style>
+</head>
+<body>
+
+<header class="banner">塵歌壺原攝</header>
+
+<div class="container">
+    <!-- 左側玩家列表 -->
+    <nav class="player-list">
+        <ul>
+            <li><a href="#player1">阿金</a></li>
+            <li><a href="#player2">槑騳</a></li>
+            <li><a href="#player3">御坂美琴</a></li>
+
+        </ul>
+    </nav>
+
+    <!-- 中間展示區 -->
+    <main class="main-display">
+
+        <section id="player1" class="player-photos">
+            <h3>阿金家</h3>
+            <figure>
+                <img src="images/gold_p1.jpg" alt="壺照1" loading="lazy">
+                <figcaption>進沙了，呸呸呸</figcaption>
+            </figure>
+            <figure>
+                <img src="images/gold_p2.jpg" alt="壺照2" loading="lazy">
+                <figcaption>納西妲，生日快樂</figcaption>
+            </figure>
+        </section>   
+
+        <section id="player2" class="player-photos">
+            <h3>槑騳家</h3>
+            <figure>
+                <img src="images/dd_p1.jpg" alt="槑騳壺照1" loading="lazy">
+                <figcaption>盛世美景</figcaption>
+            </figure>
+            <figure>
+                <img src="images/dd_p3.jpg" alt="槑騳壺照3" loading="lazy">
+                <figcaption>久等了，我的神明</figcaption>
+            </figure>
+        </section>
+
+        <section id="player3" class="player-photos">
+            <h3>御坂美琴家</h3>
+            <figure>
+                <img src="images/b_p1.jpg" alt="壺照1" loading="lazy">
+                <figcaption>你的酒館對我打了烊</figcaption>
+            </figure>
+            <figure>
+                <img src="images/b_p2.jpg" alt="壺照2" loading="lazy">
+                <figcaption>愛心燈</figcaption>
+            </figure>
+
+       
+
+
+
+    </main>
+
+    <!-- 右側翻牌 -->
+    <aside class="flip-cards">
+        <div class="card">
+            <div class="card-inner">
+                <div class="card-front">阿金</div>
+                <div class="card-back">你好</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-inner">
+                <div class="card-front">槑騳</div>
+                <div class="card-back">你好</div>
+            </div>    
+        </div>
+
+        <div class="card">
+            <div class="card-inner">
+                <div class="card-front">御坂美琴</div>
+                <div class="card-back">你好</div>
+            </div>
+        </div> 
+ 
+    </aside>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox">
+    <img src="" alt="">
+</div>
+
+<script>
+// 點擊圖片放大
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = lightbox.querySelector('img');
+document.querySelectorAll('.player-photos img').forEach(img => {
+    img.addEventListener('click', () => {
+        lightboxImg.src = img.src;
+        lightbox.classList.add('show');
+    });
+});
+lightbox.addEventListener('click', () => {
+    lightbox.classList.remove('show');
+    lightboxImg.src = '';
+});
+</script>
+
+</body>
+</html>
